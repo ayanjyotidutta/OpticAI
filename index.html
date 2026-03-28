@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChromaGuess</title>
+    <title>ChromaGuess Pro</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .spectrum-slider {
-            -webkit-appearance: none;
-            background: linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red);
-            height: 12px;
-            border-radius: 6px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; -webkit-font-smoothing: antialiased; }
+        .mono { font-family: 'Chivo Mono', monospace; }
+        
+        /* Custom Slider Styling */
+        input[type=range] { -webkit-appearance: none; background: #222; height: 8px; border-radius: 4px; outline: none; width: 100%; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px; width: 20px; border-radius: 50%; background: white; cursor: pointer; border: 2px solid black;
+            -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; 
+            background: white; cursor: pointer; border: 3px solid #161616; box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
+        .hue-slider { background: linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red) !important; }
     </style>
 </head>
-<body class="bg-zinc-900">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -38,20 +39,18 @@
         const calculateScore = (targetHsl, guessHsl) => {
             const [r1, g1, b1] = hslToRgb(...targetHsl);
             const [r2, g2, b2] = hslToRgb(...guessHsl);
-            const distance = Math.sqrt(Math.pow(r1 - r2, 2) + Math.pow(g1 - g2, 2) + Math.pow(b1 - b2, 2));
-            const score = Math.max(0, 10 - (distance / 441.67) * 10);
-            return parseFloat(score.toFixed(2));
+            const distance = Math.sqrt(Math.pow(r1-r2, 2) + Math.pow(g1-g2, 2) + Math.pow(b1-b2, 2));
+            const score = 10 * Math.pow(1 - (distance / 441.67), 3); // Exponential penalty
+            return parseFloat(Math.max(0, score).toFixed(2));
         };
 
         const generateColor = (round) => {
             const h = Math.floor(Math.random() * 360);
-            let s, l;
-            if (round === 1) { s = 90; l = 50; }
-            else if (round === 2) { s = 70; l = 50; }
-            else if (round === 3) { s = 20; l = 85; }
-            else if (round === 4) { s = 30; l = 30; }
-            else { s = 10; l = 15; }
-            return [h, s, l];
+            if (round === 1) return [h, 90, 50];
+            if (round === 2) return [h, 70, 50];
+            if (round === 3) return [h, 20, 85]; // Pastels
+            if (round === 4) return [h, 40, 30]; // Earth
+            return [h, 15, 12]; // Dark boss level
         };
 
         function ColorGame() {
@@ -59,105 +58,119 @@
             const [stage, setStage] = useState('start');
             const [targetColor, setTargetColor] = useState([0, 0, 0]);
             const [guessColor, setGuessColor] = useState([180, 50, 50]);
-            const [scores, setScores] = useState([]);
+            const [history, setHistory] = useState([]);
             const [timer, setTimer] = useState(5);
-            const timerRef = useRef(null);
-
-            const startRound = () => {
-                const newColor = generateColor(round);
-                setTargetColor(newColor);
-                setGuessColor([180, 50, 50]);
-                setStage('memorize');
-                setTimer(5);
-            };
 
             useEffect(() => {
+                let interval;
                 if ((stage === 'memorize' || stage === 'guess') && timer > 0) {
-                    timerRef.current = setTimeout(() => setTimer(timer - 1), 1000);
+                    interval = setInterval(() => setTimer(prev => prev - 1), 1000);
                 } else if (stage === 'memorize' && timer === 0) {
-                    setStage('guess');
-                    setTimer(60);
+                    setStage('guess'); setTimer(60);
                 } else if (stage === 'guess' && timer === 0) {
-                    handleCalculate();
+                    finishRound();
                 }
-                return () => clearTimeout(timerRef.current);
+                return () => clearInterval(interval);
             }, [stage, timer]);
 
-            const handleCalculate = () => {
-                const roundScore = calculateScore(targetColor, guessColor);
-                setScores([...scores, roundScore]);
+            const finishRound = () => {
+                const s = calculateScore(targetColor, guessColor);
+                setHistory([...history, { round, target: targetColor, guess: guessColor, score: s }]);
                 setStage('result');
             };
 
-            const nextStep = () => {
+            const next = () => {
                 if (round < 5) {
-                    setRound(round + 1);
-                    setStage('memorize');
-                    setTargetColor(generateColor(round + 1));
-                    setTimer(5);
-                } else {
-                    setStage('final');
-                }
+                    const nextC = generateColor(round + 1);
+                    setTargetColor(nextC); setRound(round + 1); setStage('memorize'); setTimer(5);
+                } else setStage('final');
             };
 
             if (stage === 'start') return (
-                <div className="flex flex-col items-center justify-center h-screen text-white text-center">
-                    <h1 className="text-5xl font-bold mb-4">ChromaGuess</h1>
-                    <button onClick={startRound} className="px-8 py-3 bg-white text-black font-bold rounded-full">START GAME</button>
+                <div className="h-screen flex flex-col items-center justify-center p-10">
+                    <h1 className="text-7xl font-black italic tracking-tighter mb-4">CHROMA<span className="text-zinc-700">GUESS</span></h1>
+                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); }} className="bg-white text-black px-12 py-4 rounded-full font-black tracking-widest hover:scale-105 transition">START GAME</button>
                 </div>
             );
 
             if (stage === 'memorize') return (
-                <div className="h-screen w-full flex items-center justify-center" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
-                    <div className="bg-black/20 backdrop-blur-md px-10 py-6 rounded-3xl">
-                        <span className="text-7xl font-black text-white">{timer}</span>
+                <div className="h-screen w-full flex items-center justify-center transition-colors duration-500" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
+                    <div className="bg-black/40 backdrop-blur-xl rounded-3xl p-10 border border-white/10 shadow-2xl">
+                        <div className="text-9xl font-black mono tracking-tighter text-white">{timer}</div>
                     </div>
                 </div>
             );
 
             if (stage === 'guess') return (
-                <div className="h-screen bg-zinc-900 text-white flex flex-col">
-                    <div className="p-4 flex justify-between items-center border-b border-zinc-800">
-                        <span>ROUND {round}/5</span>
-                        <span className="font-mono text-xl">{timer}s</span>
-                        <button onClick={handleCalculate} className="bg-white text-black px-4 py-1 rounded font-bold">SUBMIT</button>
+                <div className="h-screen w-full relative flex items-center justify-center transition-colors duration-150" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/40 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 z-20">
+                        <span className="uppercase text-xs font-bold tracking-[0.2em] text-white/50">Round {round}/5</span>
+                        <div className="w-px h-4 bg-white/20" />
+                        <span className="mono font-bold text-lg">{timer}s</span>
                     </div>
-                    <div className="flex-1 flex flex-col items-center justify-center p-6 gap-8">
-                        <div className="w-64 h-64 rounded-2xl border-4 border-zinc-800" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }} />
-                        <div className="w-full max-w-md space-y-6">
-                            <input type="range" min="0" max="360" value={guessColor[0]} onChange={(e) => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="w-full spectrum-slider" />
-                            <input type="range" min="0" max="100" value={guessColor[1]} onChange={(e) => setGuessColor([guessColor[0], parseInt(e.target.value), guessColor[2]])} className="w-full" />
-                            <input type="range" min="0" max="100" value={guessColor[2]} onChange={(e) => setGuessColor([guessColor[0], guessColor[1], parseInt(e.target.value)])} className="w-full" />
+
+                    <div className="absolute top-24 right-8 bottom-8 w-80 bg-[#121212] border border-zinc-800 rounded-[32px] p-8 shadow-3xl flex flex-col gap-10 z-10">
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-end"><label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hue Selection</label><span className="mono text-xs font-bold text-white">{guessColor[0]}°</span></div>
+                            <input type="range" min="0" max="360" value={guessColor[0]} onChange={e => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="hue-slider" />
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-end"><label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Saturation</label><span className="mono text-xs font-bold text-white">{guessColor[1]}%</span></div>
+                            <input type="range" min="0" max="100" value={guessColor[1]} onChange={e => setGuessColor([guessColor[0], parseInt(e.target.value), guessColor[2]])} />
+                        </div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-end"><label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Brightness</label><span className="mono text-xs font-bold text-white">{guessColor[2]}%</span></div>
+                            <input type="range" min="0" max="100" value={guessColor[2]} onChange={e => setGuessColor([guessColor[0], guessColor[1], parseInt(e.target.value)])} />
+                        </div>
+                        <div className="mt-auto pt-8 border-t border-zinc-800 flex flex-col gap-4">
+                            <button onClick={finishRound} className="w-full bg-white text-black py-4 rounded-2xl font-black text-sm tracking-widest hover:bg-zinc-200 active:scale-95 transition">SUBMIT GUESS</button>
                         </div>
                     </div>
                 </div>
             );
 
             if (stage === 'result') return (
-                <div className="h-screen flex flex-col bg-zinc-950 relative">
+                <div className="h-screen flex flex-col bg-black overflow-hidden relative">
                     <div className="flex-1 w-full" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }} />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-black w-24 h-24 rounded-full flex items-center justify-center shadow-2xl border-4 border-zinc-950 z-10">
-                        <span className="text-xl font-black">{scores[scores.length - 1]}</span>
-                    </div>
                     <div className="flex-1 w-full" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }} />
-                    <button onClick={nextStep} className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white text-black px-12 py-3 rounded-full font-bold z-10">NEXT</button>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 z-20">
+                        <div className="bg-white text-black px-8 py-4 rounded-3xl shadow-3xl border-4 border-black text-center">
+                            <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Score</div>
+                            <div className="text-4xl font-black mono">{history[history.length-1].score}</div>
+                        </div>
+                        <button onClick={next} className="bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white px-10 py-3 rounded-full font-bold border border-white/20 transition">NEXT ROUND</button>
+                    </div>
+                    <div className="absolute inset-x-0 h-px bg-white/30 top-1/2 z-10" />
                 </div>
             );
 
             if (stage === 'final') {
-                const total = scores.reduce((a, b) => a + b, 0).toFixed(2);
+                const total = history.reduce((a, b) => a + b.score, 0).toFixed(2);
+                const getRating = (t) => t >= 45 ? "EXTRAORDINARY" : t >= 40 ? "EXCELLENT" : t >= 30 ? "GOOD" : "NEEDS WORK";
                 return (
-                    <div className="h-screen bg-zinc-900 text-white p-8 flex flex-col items-center justify-center">
-                        <div className="text-8xl font-black mb-2">{total}</div>
-                        <div className="text-2xl font-bold mb-10 text-blue-400">{total >= 40 ? 'EXCELLENT' : total >= 30 ? 'GOOD' : 'BAD'}</div>
-                        <button onClick={() => window.location.reload()} className="px-8 py-3 bg-white text-black font-bold rounded-full">PLAY AGAIN</button>
+                    <div className="h-screen w-full bg-[#0a0a0a] p-10 flex flex-col items-center overflow-y-auto">
+                        <h2 className="text-zinc-600 font-black tracking-[0.4em] text-[10px] mb-2 uppercase">{getRating(total)}</h2>
+                        <div className="text-[160px] font-black leading-none tracking-tighter mono mb-2">{total}</div>
+                        <div className="text-zinc-700 font-mono tracking-widest mb-16 uppercase text-xs">Total Accuracy Points</div>
+                        
+                        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-5 gap-6 mb-16">
+                            {history.map(h => (
+                                <div key={h.round} className="bg-[#111] border border-zinc-800 rounded-3xl p-6 flex flex-col gap-4">
+                                    <div className="flex justify-between items-center"><span className="text-[10px] font-black text-zinc-600 uppercase">R{h.round}</span><span className="mono font-bold">{h.score}</span></div>
+                                    <div className="h-24 rounded-2xl overflow-hidden border border-zinc-800 shadow-inner">
+                                        <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.target[0]}, ${h.target[1]}%, ${h.target[2]}%)` }} />
+                                        <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.guess[0]}, ${h.guess[1]}%, ${h.guess[2]}%)` }} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button onClick={() => window.location.reload()} className="bg-white text-black px-16 py-4 rounded-full font-black tracking-widest hover:scale-105 transition">PLAY AGAIN</button>
                     </div>
                 );
             }
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ColorGame />);
+        ReactDOM.createRoot(document.getElementById('root')).render(<ColorGame />);
     </script>
 </body>
 </html>
