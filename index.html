@@ -83,7 +83,7 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Neomorphic Design: Balanced Shadows & Lighting */
+        /* Master Neomorphic Class */
         .neu-btn {
             background: linear-gradient(145deg, #0d0d0f, #080809);
             box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
@@ -100,6 +100,19 @@
         .neu-btn:active {
             transform: translateY(-2px);
             box-shadow: inset 4px 4px 8px #010101, inset -2px -2px 6px #1a1b1f;
+        }
+
+        /* White Neomorphic Style for Start Button */
+        .neu-btn-white {
+            background: #ffffff;
+            box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .neu-btn-white:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
         }
 
         @keyframes slideUp {
@@ -227,6 +240,7 @@
             if (stage === 'start') return (
                 <div className="h-screen flex flex-col items-center justify-center p-8 text-center bg-[#050505]">
                     <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">OPTIC<span className="text-zinc-800">AI</span></h1>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mb-12">
                         <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
                             <div className="text-3xl">👁️</div>
@@ -244,9 +258,25 @@
                             <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">We score with Elite precision. Aim for a "9" or higher.</p>
                         </div>
                     </div>
-                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }} className="bg-white text-black px-16 py-4 rounded-full font-black tracking-widest hover:scale-105 transition mb-6 shadow-2xl active:scale-95 uppercase">Start Game</button>
-                    <p className="text-sm font-bold tracking-[0.25em] text-white/60 uppercase mb-16 select-none italic">5 Rounds. 1 Crown. Are your eyes lying to you?</p>
-                    <div className="fixed bottom-10 text-[14px] font-bold tracking-[0.2em] text-zinc-700 uppercase">Made by Ayan Jyoti Dutta :)</div>
+
+                    {/* NEOMORPHIC START BUTTON */}
+                    <button
+                        onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }}
+                        className="neu-btn-white text-black px-12 py-6 rounded-full font-black tracking-[0.1em] text-[20px] flex items-center justify-center gap-6 group mb-6 transition-all active:scale-95"
+                    >
+                        <span>Start OpticAI</span>
+                        <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                            <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <p className="text-shadow-xl font-bold tracking-[0.05em] text-white/60 mb-16">
+                        5 Rounds. 1 Crown. Are your eyes lying to you?
+                    </p>
+
+                    <div className="fixed bottom-10 text-[16px] font-bold tracking-[0.05em] text-zinc-700 ">Made by Ayan Jyoti Dutta :)</div>
                 </div>
             );
 
@@ -288,7 +318,7 @@
                 const totalDisplay = rawTotal.toFixed(2);
                 const decimalPart = rawTotal % 1;
                 const targetScore = decimalPart < 0.5 ? Math.ceil(rawTotal) : Math.floor(rawTotal) + 2;
-                const retryText = rawTotal < 48 ? `TRY BEATING ${targetScore} SCORE` : "RETRY CHALLENGE";
+                const retryText = rawTotal < 48 ? `Try Beating ${targetScore} Score` : "Retry Challenge";
                 const tier = getTieredInfo(rawTotal);
 
                 return (
@@ -310,7 +340,6 @@
                             ))}
                         </div>
 
-                        {/* NEOMORPHIC ACTION STACK */}
                         <div className="flex flex-col items-center gap-6 mb-20 w-full max-w-md">
                             <button
                                 onClick={() => copyShareData(tier, totalDisplay)}
@@ -326,7 +355,7 @@
                                 {retryText}
                             </button>
                         </div>
-                        <div className="text-[11px] font-medium tracking-[0.2em] text-zinc-700 uppercase mb-10">Made by Ayan Jyoti Dutta :)</div>
+                        <div className="text-[16px] font-medium tracking-[0.05em] text-zinc-700 mb-10">Made by Ayan Jyoti Dutta :)</div>
                     </div>
                 );
             }
