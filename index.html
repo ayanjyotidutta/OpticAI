@@ -12,117 +12,31 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000;
-            color: white;
-            -webkit-font-smoothing: antialiased;
-            overflow: hidden;
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; -webkit-font-smoothing: antialiased; overflow: hidden; }
+        .mono { font-family: 'Chivo Mono', monospace; }
+
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        .pulse-container { animation: heartbeat 1s ease-in-out infinite; }
+
+        input[type=range] { -webkit-appearance: none; background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 4px; outline: none; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: white; cursor: pointer; border: 3px solid #111; }
+        .hue-slider { background: linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red) !important; }
+
+        .glass { background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.1); }
+
+        /* Progress Circle Animation */
+        .timer-svg { transform: rotate(-90deg); }
+        .timer-circle {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            transition: stroke-dashoffset 1s linear;
         }
 
-        .mono {
-            font-family: 'Chivo Mono', monospace;
-        }
-
-        @keyframes heartbeat {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.02);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .pulse-container {
-            animation: heartbeat 1s ease-in-out infinite;
-        }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.1);
-            height: 8px;
-            border-radius: 4px;
-            outline: none;
-            width: 100%;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            border: 3px solid #111;
-        }
-
-        .hue-slider {
-            background: linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red) !important;
-        }
-
-        .glass {
-            background: rgba(15, 15, 15, 0.7);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stage-card {
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .stage-card:hover {
-            transform: scale(1.08) translateY(-10px);
-            z-index: 50;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .neu-btn {
-            background: linear-gradient(145deg, #0d0d0f, #080809);
-            box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .neu-btn:hover {
-            transform: translateY(-6px);
-            box-shadow: 8px 8px 20px #010101, -4px -4px 12px #222429;
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .neu-btn-white {
-            background: #ffffff;
-            box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .neu-btn-white:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15);
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translate(-50%, 100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
-        }
-
-        .toast {
-            animation: slideUp 0.3s ease-out forwards;
-        }
+        .neu-btn-white { background: #ffffff; box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .neu-btn-white:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(255, 255, 255, 0.15); }
+        
+        .neu-btn { background: linear-gradient(145deg, #0d0d0f, #080809); box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f; border: 1px solid rgba(255, 255, 255, 0.03); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .neu-btn:hover { transform: translateY(-6px); box-shadow: 8px 8px 20px #010101, -4px -4px 12px #222429; border-color: rgba(255, 255, 255, 0.15); }
     </style>
 </head>
 
@@ -136,25 +50,8 @@
             if (s >= 49) return { label: "DIVINE VISIONARY", quote: "Are you a monitor? Your retinas are cheating." };
             if (s >= 48) return { label: "EYE OF THE TIGER", quote: "Pantone wants your location right now." };
             if (s >= 47) return { label: "COLOR CONNOISSEUR", quote: "You see the spectrum others only dream of." };
-            if (s >= 46) return { label: "CHROMA MASTER", quote: "Absolute precision. Flawless execution." };
-            if (s >= 45) return { label: "SPECTRUM ELITE", quote: "Your color intuition is scarily accurate." };
-            if (s >= 44) return { label: "VISUAL ARCHITECT", quote: "A masterful display of light and hue." };
-            if (s >= 43) return { label: "OPTIC ACE", quote: "You've got the professional touch." };
-            if (s >= 42) return { label: "PIXEL PERFECT", quote: "Subtle nuances are your playground." };
-            if (s >= 41) return { label: "COLOR MAVEN", quote: "Remarkably close. You have the gift." };
             if (s >= 40) return { label: "SHADE SPECIALIST", quote: "Strong grasp of the secondary layers." };
-            if (s >= 38) return { label: "VIBE CHECKER", quote: "You've got the vibe, just missing the nuances." };
-            if (s >= 35) return { label: "STEADY EYE", quote: "Solid work. The training is paying off." };
-            if (s >= 31) return { label: "COLOUR CURIOUS", quote: "Getting warmer. Focus on the saturation." };
-
-            const lowQuotes = [
-                "Is your 'Night Shift' mode on? Be honest.",
-                "You can do better. Squint a little harder next time.",
-                "Good effort, but your retinas need a recalibration.",
-                "The spectrum is wide, and you're just visiting.",
-                "Not quite there yet. Try it in a darker room?"
-            ];
-            return { label: "COLOR APPRENTICE", quote: lowQuotes[s % 5] };
+            return { label: "COLOR APPRENTICE", quote: "Not quite there yet. Try it in a darker room?" };
         };
 
         const hslToRgb = (h, s, l) => {
@@ -183,7 +80,7 @@
         const formatMs = (ms) => {
             const s = Math.floor(ms / 1000);
             const m = Math.floor((ms % 1000) / 10);
-            return `${s}:${m.toString().padStart(2, '0')}`;
+            return `${s}.${m.toString().padStart(2, '0')}`;
         };
 
         function ColorGame() {
@@ -195,11 +92,12 @@
             const [msTimer, setMsTimer] = useState(5000);
             const [guessTimer, setGuessTimer] = useState(30);
             const [toast, setToast] = useState(null);
+            const [resultTimer, setResultTimer] = useState(5);
 
             useEffect(() => {
                 let id;
                 if (stage === 'memorize' && msTimer > 0) {
-                    id = setInterval(() => setMsTimer(prev => prev - 10), 10);
+                    id = setInterval(() => { setMsTimer(prev => Math.max(0, prev - 4)); }, 4);
                 } else if (stage === 'memorize' && msTimer <= 0) {
                     setStage('guess'); setGuessTimer(30);
                 }
@@ -216,9 +114,21 @@
                 return () => clearInterval(id);
             }, [stage, guessTimer]);
 
+            // Auto-advance Logic for Result Stage
+            useEffect(() => {
+                let id;
+                if (stage === 'result' && resultTimer > 0) {
+                    id = setInterval(() => setResultTimer(t => t - 1), 1000);
+                } else if (stage === 'result' && resultTimer === 0) {
+                    next();
+                }
+                return () => clearInterval(id);
+            }, [stage, resultTimer]);
+
             const submitGuess = () => {
                 const s = calculateScore(targetColor, guessColor);
                 setHistory([...history, { round, target: targetColor, guess: guessColor, score: s }]);
+                setResultTimer(5); // Reset timer when entering result stage
                 setStage('result');
             };
 
@@ -226,142 +136,4 @@
                 if (round < 5) {
                     setRound(round + 1); setTargetColor(generateColor(round + 1));
                     setGuessColor([180, 100, 50]); setMsTimer(5000); setStage('memorize');
-                } else setStage('final');
-            };
-
-            const triggerToast = (msg) => {
-                setToast(msg);
-                setTimeout(() => setToast(null), 2000);
-            };
-
-            const copyShareData = (tier, display) => {
-                const shareURL = window.location.href;
-                const text = `OpticAI Result: I scored ${display}/50! My vision is officially "${tier.label}". Can you beat me? \n\nPlay here: ${shareURL}`;
-                navigator.clipboard.writeText(text).then(() => {
-                    triggerToast("Result + Link Copied!");
-                });
-            };
-
-            if (stage === 'start') return (
-                <div className="h-screen flex flex-col items-center justify-center p-8 text-center bg-[#050505]">
-                    <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">Optic<span className="text-zinc-500">AI</span></h1>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mb-12">
-                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
-                            <div className="text-3xl">👁️</div>
-                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-zinc-1000">Stare</h3>
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">5 seconds. Burn the color into your retinas. Don't blink!</p>
-                        </div>
-                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3 scale-105 bg-white/[0.07] border-white/10 shadow-xl">
-                            <div className="text-3xl">🎨</div>
-                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-text-zinc-1000">Match</h3>
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">30 seconds to recreate that magic. It's your time to shine.</p>
-                        </div>
-                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
-                            <div className="text-3xl">⚖️</div>
-                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-zinc-1000">Score</h3>
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">We score with Elite precision. Aim for a "9" or higher.</p>
-                        </div>
-                    </div>
-                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }} className="neu-btn-white text-black px-12 py-6 rounded-full font-black tracking-[0.05em] text-[20px] flex items-center justify-center gap-6 group mb-6 transition-all active:scale-95">
-                        <span>Start OpticAI</span>
-                        <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                            <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
-                        </div>
-                    </button>
-                    <p className="text-shadow-xl font-bold tracking-[0.05em] text-white/60 mb-16">5 Rounds. 1 Crown. Are your eyes lying to you?</p>
-                    <div className="fixed bottom-10 text-[16px] font-bold tracking-[0.05em] text-zinc-500">Made by Ayan Jyoti Dutta :)</div>
-                </div>
-            );
-
-            if (stage === 'memorize') return (
-                <div className="h-screen w-full flex items-center justify-center pulse-container" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
-                    <div className="bg-black/40 backdrop-blur-2xl rounded-[40px] px-16 py-10 border border-white/10 shadow-2xl text-center">
-                        <div className="text-[120px] font-black mono text-white leading-none tracking-tighter">{formatMs(msTimer)}</div>
-                    </div>
-                </div>
-            );
-
-            if (stage === 'guess') return (
-                <div className="h-screen w-full relative flex items-center justify-center" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-xl px-10 py-3 rounded-full border border-white/10">
-                        <span className="mono font-bold text-3xl tracking-widest">{guessTimer}S</span>
-                    </div>
-                    <div className="absolute top-24 right-8 bottom-8 w-80 glass rounded-[40px] p-8 flex flex-col gap-10 z-10 shadow-2xl text-white">
-                        <div className="space-y-4"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Hue Selection • {guessColor[0]}°</label><input type="range" min="0" max="360" value={guessColor[0]} onChange={e => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="hue-slider" /></div>
-                        <div className="space-y-4"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Saturation • {guessColor[1]}%</label><input type="range" min="0" max="100" value={guessColor[1]} onChange={e => setGuessColor([guessColor[0], parseInt(e.target.value), guessColor[2]])} /></div>
-                        <div className="space-y-4"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Brightness • {guessColor[2]}%</label><input type="range" min="0" max="100" value={guessColor[2]} onChange={e => setGuessColor([guessColor[0], guessColor[1], parseInt(e.target.value)])} /></div>
-                        <button onClick={submitGuess} className="mt-auto bg-white text-black py-5 rounded-2xl font-black tracking-widest uppercase text-xs hover:bg-zinc-200 active:scale-95 transition">Lock it In</button>
-                    </div>
-                </div>
-            );
-
-            if (stage === 'result') return (
-                <div className="h-screen flex flex-col bg-black relative">
-                    <div className="flex-1 w-full relative" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
-                        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Original Colour</span>
-                        </div>
-                    </div>
-                    <div className="flex-1 w-full relative" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Your Colour</span>
-                        </div>
-                    </div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6 z-20">
-                        <div className="bg-white text-black px-12 py-6 rounded-[32px] shadow-3xl border-[10px] border-black text-center"><div className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mb-1">Score</div><div className="text-6xl font-black mono">{history[history.length - 1].score}</div></div>
-                        <button onClick={next} className="bg-white/10 hover:bg-white/20 backdrop-blur-2xl text-white px-10 py-3 rounded-full font-black tracking-widest border border-white/20 uppercase text-[10px] transition">Next Round</button>
-                    </div>
-                    <div className="absolute inset-x-0 h-px bg-white/20 top-1/2 z-10" />
-                </div>
-            );
-
-            if (stage === 'final') {
-                const rawTotal = history.reduce((a, b) => a + b.score, 0);
-                const totalDisplay = rawTotal.toFixed(2);
-                const decimalPart = rawTotal % 1;
-                const targetScore = decimalPart < 0.5 ? Math.ceil(rawTotal) : Math.floor(rawTotal) + 2;
-                const retryText = rawTotal < 48 ? `Try Beating ${targetScore} Score` : "Retry Challenge";
-                const tier = getTieredInfo(rawTotal);
-
-                return (
-                    <div className="h-screen w-full bg-[#080808] p-10 flex flex-col items-center overflow-y-auto relative">
-                        {toast && <div className="fixed bottom-32 left-1/2 toast z-[100] bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">{toast}</div>}
-                        <div className="flex-grow flex flex-col items-center justify-center text-center mt-12 mb-16">
-                            <h2 className="text-blue-400 font-black tracking-[0.4em] text-[24px] uppercase mb-4 italic">{tier.label}</h2>
-                            <div className="text-[160px] font-black leading-none tracking-tighter mono mb-6 select-none">{totalDisplay}</div>
-                            <p className="text-zinc-500 font-medium italic text-lg opacity-80 mb-4 select-none">"{tier.quote}"</p>
-                        </div>
-
-                        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-5 gap-6 mb-12 px-4">
-                            {history.map(h => (
-                                <div key={h.round} className="stage-card bg-[#111] border border-zinc-800 rounded-[32px] p-6 flex flex-col gap-5 border">
-                                    <div className="flex justify-between items-center px-1"><span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Stage 0{h.round}</span><span className="mono font-bold text-white/90 text-sm">{h.score}</span></div>
-                                    <div className="h-32 rounded-2xl overflow-hidden border border-zinc-900 shadow-2xl relative">
-                                        <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.target[0]}, ${h.target[1]}%, ${h.target[2]}%)` }} />
-                                        <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.guess[0]}, ${h.guess[1]}%, ${h.guess[2]}%)` }} />
-                                        <div className="absolute inset-x-0 h-px bg-white/10 top-1/2" />
-                                    </div>
-                                    <div className="text-[9px] font-black text-zinc-700 uppercase tracking-tighter truncate text-center">{h.theme}</div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="flex flex-col items-center gap-6 mb-20 w-full max-w-md">
-                            <button onClick={() => copyShareData(tier, totalDisplay)} className="neu-btn w-full text-white py-6 rounded-full font-black tracking-[0.2em] text-lg flex items-center justify-center gap-6 group px-10">
-                                <span className="text-white/90">Share OpticAI</span>
-                                <div className="bg-white/10 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                                    <svg className="w-5 h-5 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
-                                </div>
-                            </button>
-                            <button onClick={() => window.location.reload()} className="neu-btn w-full text-zinc-400 hover:text-white py-5 rounded-full font-black tracking-[0.15em] text-xs transition uppercase">{retryText}</button>
-                        </div>
-                        <div className="text-[11px] font-medium tracking-[0.2em] text-zinc-700 uppercase mb-10">Made by Ayan Jyoti Dutta :)</div>
-                    </div>
-                );
-            }
-        }
-        ReactDOM.createRoot(document.getElementById('root')).render(<ColorGame />);
-    </script>
-</body>
-
-</html>
+                }
