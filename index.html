@@ -10,25 +10,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;700&family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: #000; color: white; -webkit-font-smoothing: antialiased; overflow: hidden; }
         .mono { font-family: 'Chivo Mono', monospace; }
-        
-        input[type=range] { -webkit-appearance: none; background: #222; height: 8px; border-radius: 4px; outline: none; width: 100%; }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.015); }
+            100% { transform: scale(1); }
+        }
+        .pulse-container { animation: heartbeat 1s ease-in-out infinite; }
+
+        input[type=range] { -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 6px; border-radius: 4px; outline: none; width: 100%; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 26px; width: 26px; border-radius: 50%; 
-            background: white; cursor: pointer; border: 3px solid #161616; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            -webkit-appearance: none; height: 22px; width: 22px; border-radius: 50%; 
+            background: white; cursor: pointer; border: 2px solid rgba(0,0,0,0.5); box-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
         .hue-slider { background: linear-gradient(to right, red, #ff0, lime, cyan, blue, #f0f, red) !important; }
         
-        .result-card { transition: transform 0.3s ease; }
-        .result-card:hover { transform: translateY(-5px); }
+        .glass {
+            background: rgba(15, 15, 15, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
     <div id="root"></div>
-
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
+
+        const THEMES = [
+            "ELECTRIC NEON TOKYO",
+            "NORDIC WINTER PASTELS",
+            "SAHARA DUST AT DUSK",
+            "DEEP ATLANTIC TRENCH",
+            "ARCTIC GHOST FRONTIER"
+        ];
 
         const hslToRgb = (h, s, l) => {
             s /= 100; l /= 100;
@@ -42,104 +60,110 @@
             const [r1, g1, b1] = hslToRgb(...targetHsl);
             const [r2, g2, b2] = hslToRgb(...guessHsl);
             const distance = Math.sqrt(Math.pow(r1-r2, 2) + Math.pow(g1-g2, 2) + Math.pow(b1-b2, 2));
-            
-            // ADJUSTED SCORING: Using 1.8 exponent (Down from 3.0, up from 1.0)
-            // This is the "Sweet Spot" for fairness.
             const score = 10 * Math.pow(1 - (distance / 441.67), 1.8); 
             return parseFloat(Math.max(0, score).toFixed(2));
         };
 
         const generateColor = (round) => {
             const h = Math.floor(Math.random() * 360);
-            if (round === 1) return [h, 90, 50]; // Primary
-            if (round === 2) return [h, 75, 45]; // Bold
-            if (round === 3) return [h, 25, 80]; // Pastels
-            if (round === 4) return [h, 35, 35]; // Muted/Earth
-            return [h, Math.random() * 15, 15];  // The Deep Dark
-        };
-
-        const getRemark = (total) => {
-            if (total >= 49) return { label: "DIVINE ENTITY", quote: "Are you a monitor? How did you see that?", color: "text-white" };
-            if (total >= 47) return { label: "EYE OF THE TIGER", quote: "You see colors that don't even exist yet.", color: "text-emerald-400" };
-            if (total >= 44) return { label: "COLOR CONNOISSEUR", quote: "Pantone is literally calling your phone right now.", color: "text-blue-400" };
-            if (total >= 40) return { label: "IMPRESSIVE", quote: "Your retinas are definitely high-definition.", color: "text-cyan-400" };
-            if (total >= 35) return { label: "PRETTY GOOD", quote: "You've got the vibe, just missing the nuances.", color: "text-yellow-400" };
-            if (total >= 30) return { label: "AVERAGE HUMAN", quote: "Not bad, but maybe turn your screen brightness up?", color: "text-orange-400" };
-            if (total >= 20) return { label: "COLOR BLIND?", quote: "Is your 'Night Shift' mode on? Be honest.", color: "text-red-400" };
-            return { label: "ABYSMAL", quote: "You guessed 'Red' for a 'Blue' square. Absolute chaos.", color: "text-zinc-600" };
+            if (round === 1) return [h, 95, 55];
+            if (round === 2) return [h, 30, 85];
+            if (round === 3) return [h, 45, 45];
+            if (round === 4) return [h, 60, 20];
+            return [h, 10, 10];
         };
 
         function ColorGame() {
             const [round, setRound] = useState(1);
             const [stage, setStage] = useState('start');
             const [targetColor, setTargetColor] = useState([0, 0, 0]);
-            const [guessColor, setGuessColor] = useState([180, 50, 50]);
+            const [guessColor, setGuessColor] = useState([180, 100, 50]);
             const [history, setHistory] = useState([]);
-            const [timer, setTimer] = useState(5);
+            const [msTimer, setMsTimer] = useState(3000); 
+            const [guessTimer, setGuessTimer] = useState(10); 
 
             useEffect(() => {
                 let interval;
-                if ((stage === 'memorize' || stage === 'guess') && timer > 0) {
-                    interval = setInterval(() => setTimer(prev => prev - 1), 1000);
-                } else if (stage === 'memorize' && timer === 0) {
-                    setStage('guess'); setTimer(60);
-                } else if (stage === 'guess' && timer === 0) {
+                if (stage === 'memorize' && msTimer > 0) {
+                    interval = setInterval(() => setMsTimer(prev => prev - 10), 10);
+                } else if (stage === 'memorize' && msTimer <= 0) {
+                    setStage('guess');
+                    setGuessTimer(10);
+                }
+                return () => clearInterval(interval);
+            }, [stage, msTimer]);
+
+            useEffect(() => {
+                let interval;
+                if (stage === 'guess' && guessTimer > 0) {
+                    interval = setInterval(() => setGuessTimer(prev => prev - 1), 1000);
+                } else if (stage === 'guess' && guessTimer === 0) {
                     finishRound();
                 }
                 return () => clearInterval(interval);
-            }, [stage, timer]);
+            }, [stage, guessTimer]);
 
             const finishRound = () => {
                 const s = calculateScore(targetColor, guessColor);
-                setHistory([...history, { round, target: targetColor, guess: guessColor, score: s }]);
+                setHistory([...history, { round, target: targetColor, guess: guessColor, score: s, theme: THEMES[round-1] }]);
                 setStage('result');
+            };
+
+            const formatMs = (ms) => {
+                const totalSeconds = ms / 1000;
+                const seconds = Math.floor(totalSeconds);
+                const milliseconds = Math.floor((ms % 1000) / 10);
+                return `${seconds}:${milliseconds.toString().padStart(2, '0')}`;
             };
 
             const next = () => {
                 if (round < 5) {
-                    const nextC = generateColor(round + 1);
-                    setTargetColor(nextC); setRound(round + 1); setStage('memorize'); setTimer(5);
+                    setTargetColor(generateColor(round + 1));
+                    setGuessColor([180, 100, 50]);
+                    setRound(round + 1); setStage('memorize'); setMsTimer(3000);
                 } else setStage('final');
             };
 
             if (stage === 'start') return (
-                <div className="h-screen flex flex-col items-center justify-center p-10 text-center">
-                    <h1 className="text-8xl font-black tracking-tighter mb-2 italic">CHROMA<span className="text-zinc-800">GUESS</span></h1>
-                    <p className="text-zinc-500 mb-10 tracking-[0.3em] font-bold text-xs uppercase">The ultimate test of visual memory</p>
-                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); }} className="bg-white text-black px-16 py-5 rounded-full font-black tracking-[0.2em] hover:scale-105 transition shadow-2xl">START GAME</button>
+                <div className="h-screen flex flex-col items-center justify-center text-center p-10 bg-[#050505]">
+                    <h1 className="text-8xl font-black italic tracking-tighter mb-4 select-none">CHROMA<span className="text-zinc-800">ELITE</span></h1>
+                    <div className="mb-12 space-y-1">
+                        <p className="text-white/80 font-bold text-sm tracking-[0.1em]">MBA, SJMSOM, IIT Bombay</p>
+                        <p className="text-zinc-600 font-bold text-xs tracking-[0.2em] uppercase">Brand Manager, HCLTech Edition</p>
+                    </div>
+                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); }} className="bg-white text-black px-16 py-4 rounded-full font-black tracking-widest hover:scale-105 transition active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">ENTER VOID</button>
                 </div>
             );
 
             if (stage === 'memorize') return (
-                <div className="h-screen w-full flex items-center justify-center transition-all duration-700" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
-                    <div className="bg-black/30 backdrop-blur-2xl rounded-[40px] p-12 border border-white/10 shadow-2xl">
-                        <div className="text-[120px] font-black mono leading-none text-white">{timer}</div>
+                <div className="h-screen w-full flex items-center justify-center pulse-container transition-all duration-300" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
+                    <div className="bg-black/40 backdrop-blur-2xl rounded-[40px] px-16 py-10 border border-white/10 shadow-2xl">
+                        <div className="text-[120px] font-black mono text-white leading-none tracking-tighter">{formatMs(msTimer)}</div>
                     </div>
+                    <div className="fixed bottom-10 left-10 text-white font-black tracking-[0.5em] text-[10px] uppercase opacity-40">{THEMES[round-1]}</div>
                 </div>
             );
 
             if (stage === 'guess') return (
-                <div className="h-screen w-full relative flex items-center justify-center transition-colors duration-200" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-6 bg-black/60 backdrop-blur-xl px-8 py-3 rounded-full border border-white/10 z-20">
-                        <span className="uppercase text-[10px] font-black tracking-[0.3em] text-white/40">Round {round} / 5</span>
-                        <div className="w-px h-5 bg-white/20" />
-                        <span className="mono font-bold text-2xl text-white">{timer}s</span>
+                <div className="h-screen w-full relative flex items-center justify-center" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
+                    <div className="absolute top-8 left-1/2 -translate-x-1/2 flex items-center gap-6 bg-black/60 backdrop-blur-xl px-12 py-3 rounded-full border border-white/10 z-20">
+                        <span className="mono font-bold text-3xl text-white tracking-widest">{guessTimer}S</span>
                     </div>
 
-                    <div className="absolute top-28 right-10 bottom-10 w-[340px] bg-[#0F0F0F]/95 backdrop-blur-md border border-zinc-800 rounded-[40px] p-10 shadow-3xl flex flex-col gap-12 z-10">
-                        <div className="space-y-5">
-                            <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Hue</label><span className="mono text-sm font-bold">{guessColor[0]}°</span></div>
+                    <div className="absolute top-24 right-8 bottom-8 w-80 glass rounded-[40px] p-8 flex flex-col gap-10 z-10 shadow-2xl">
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Hue</label><span className="mono text-xs opacity-60">{guessColor[0]}°</span></div>
                             <input type="range" min="0" max="360" value={guessColor[0]} onChange={e => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="hue-slider" />
                         </div>
-                        <div className="space-y-5">
-                            <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Saturation</label><span className="mono text-sm font-bold">{guessColor[1]}%</span></div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Saturation</label><span className="mono text-xs opacity-60">{guessColor[1]}%</span></div>
                             <input type="range" min="0" max="100" value={guessColor[1]} onChange={e => setGuessColor([guessColor[0], parseInt(e.target.value), guessColor[2]])} />
                         </div>
-                        <div className="space-y-5">
-                            <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Brightness</label><span className="mono text-sm font-bold">{guessColor[2]}%</span></div>
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Brightness</label><span className="mono text-xs opacity-60">{guessColor[2]}%</span></div>
                             <input type="range" min="0" max="100" value={guessColor[2]} onChange={e => setGuessColor([guessColor[0], guessColor[1], parseInt(e.target.value)])} />
                         </div>
-                        <button onClick={finishRound} className="mt-auto bg-white text-black py-5 rounded-2xl font-black tracking-[0.2em] uppercase text-xs hover:bg-zinc-200 transition active:scale-95">Lock it in</button>
+                        <button onClick={finishRound} className="mt-auto bg-white text-black py-4 rounded-2xl font-black tracking-widest uppercase text-[10px] hover:bg-zinc-200 transition">LOCK IN</button>
                     </div>
                 </div>
             );
@@ -150,10 +174,9 @@
                     <div className="flex-1 w-full" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }} />
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6 z-20">
                         <div className="bg-white text-black px-12 py-6 rounded-[32px] shadow-3xl border-8 border-black text-center">
-                            <div className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mb-1">Score</div>
                             <div className="text-6xl font-black mono">{history[history.length-1].score}</div>
                         </div>
-                        <button onClick={next} className="bg-white/10 hover:bg-white/20 backdrop-blur-2xl text-white px-12 py-4 rounded-full font-black tracking-widest border border-white/20 transition uppercase text-xs">{round < 5 ? "Next Stage" : "Final Verdict"}</button>
+                        <button onClick={next} className="bg-white/10 backdrop-blur-xl text-white px-12 py-4 rounded-full font-black tracking-widest border border-white/20 uppercase text-[10px] hover:bg-white hover:text-black transition">CONTINUE CHALLENGE</button>
                     </div>
                     <div className="absolute inset-x-0 h-px bg-white/20 top-1/2 z-10" />
                 </div>
@@ -161,33 +184,30 @@
 
             if (stage === 'final') {
                 const total = history.reduce((a, b) => a + b.score, 0).toFixed(2);
-                const remark = getRemark(parseFloat(total));
                 return (
-                    <div className="h-screen w-full bg-[#080808] p-10 flex flex-col items-center overflow-y-auto">
-                        <div className="mt-12 text-center mb-20">
-                            <h2 className={`text-5xl font-black tracking-tighter mb-4 uppercase italic ${remark.color}`}>{remark.label}</h2>
-                            <div className="text-[180px] font-black leading-none tracking-tighter mono mb-6 select-none">{total}</div>
-                            <p className="text-zinc-500 font-medium italic text-lg">"{remark.quote}"</p>
+                    <div className="h-screen w-full bg-[#080808] p-6 flex flex-col items-center justify-between overflow-hidden">
+                        <div className="flex-grow flex flex-col items-center justify-center text-center">
+                            <h2 className="text-zinc-600 font-black tracking-[0.5em] text-[10px] uppercase mb-2 italic">Session Complete</h2>
+                            <div className="text-[140px] font-black leading-none tracking-tighter mono mb-4">{total}</div>
+                            <div className="bg-white/5 border border-white/10 px-8 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Performance Verdict: Extraordinary</div>
                         </div>
-                        
-                        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-5 gap-6 mb-20">
+                        <div className="w-full max-w-6xl grid grid-cols-5 gap-4 mb-8 px-4">
                             {history.map(h => (
-                                <div key={h.round} className="result-card bg-[#111] border border-zinc-800 rounded-[32px] p-6 flex flex-col gap-5">
-                                    <div className="flex justify-between items-center"><span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Stage 0{h.round}</span><span className="mono font-bold text-white/80">{h.score}</span></div>
-                                    <div className="h-28 rounded-2xl overflow-hidden border border-zinc-900 shadow-2xl relative">
+                                <div key={h.round} className="bg-[#111] border border-zinc-800 rounded-3xl p-4 flex flex-col gap-3">
+                                    <span className="text-[9px] font-black text-zinc-700 uppercase tracking-widest truncate">{h.theme}</span>
+                                    <div className="h-16 rounded-xl overflow-hidden border border-zinc-900 shadow-2xl relative">
                                         <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.target[0]}, ${h.target[1]}%, ${h.target[2]}%)` }} />
                                         <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.guess[0]}, ${h.guess[1]}%, ${h.guess[2]}%)` }} />
-                                        <div className="absolute inset-0 border border-white/5 pointer-events-none rounded-2xl" />
                                     </div>
+                                    <div className="flex justify-between items-center px-1"><span className="text-[8px] font-black text-zinc-700 uppercase">Score</span><span className="mono text-xs font-bold">{h.score}</span></div>
                                 </div>
                             ))}
                         </div>
-                        <button onClick={() => window.location.reload()} className="bg-white text-black px-20 py-5 rounded-full font-black tracking-[0.3em] uppercase text-sm hover:scale-105 transition mb-20">Retry Challenge</button>
+                        <button onClick={() => window.location.reload()} className="bg-white text-black px-20 py-4 rounded-full font-black tracking-widest uppercase text-xs mb-8 active:scale-95 transition hover:bg-zinc-200">RESTART PROTOCOL</button>
                     </div>
                 );
             }
         }
-
         ReactDOM.createRoot(document.getElementById('root')).render(<ColorGame />);
     </script>
 </body>
