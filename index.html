@@ -83,7 +83,6 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Master Neomorphic Class */
         .neu-btn {
             background: linear-gradient(145deg, #0d0d0f, #080809);
             box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
@@ -97,12 +96,6 @@
             border-color: rgba(255, 255, 255, 0.15);
         }
 
-        .neu-btn:active {
-            transform: translateY(-2px);
-            box-shadow: inset 4px 4px 8px #010101, inset -2px -2px 6px #1a1b1f;
-        }
-
-        /* White Neomorphic Style for Start Button */
         .neu-btn-white {
             background: #ffffff;
             box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
@@ -138,10 +131,6 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        const THEMES = [
-            "ELECTRIC NEON TOKYO", "NORDIC WINTER PASTELS", "SAHARA DUST AT DUSK", "DEEP ATLANTIC TRENCH", "ARCTIC GHOST FRONTIER"
-        ];
-
         const getTieredInfo = (score) => {
             const s = Math.floor(score);
             if (s >= 49) return { label: "DIVINE VISIONARY", quote: "Are you a monitor? Your retinas are cheating." };
@@ -157,7 +146,7 @@
             if (s >= 38) return { label: "VIBE CHECKER", quote: "You've got the vibe, just missing the nuances." };
             if (s >= 35) return { label: "STEADY EYE", quote: "Solid work. The training is paying off." };
             if (s >= 31) return { label: "COLOUR CURIOUS", quote: "Getting warmer. Focus on the saturation." };
-            
+
             const lowQuotes = [
                 "Is your 'Night Shift' mode on? Be honest.",
                 "You can do better. Squint a little harder next time.",
@@ -167,6 +156,7 @@
             ];
             return { label: "COLOR APPRENTICE", quote: lowQuotes[s % 5] };
         };
+
         const hslToRgb = (h, s, l) => {
             s /= 100; l /= 100;
             const k = n => (n + h / 30) % 12;
@@ -228,7 +218,7 @@
 
             const submitGuess = () => {
                 const s = calculateScore(targetColor, guessColor);
-                setHistory([...history, { round, target: targetColor, guess: guessColor, score: s, theme: THEMES[round - 1] }]);
+                setHistory([...history, { round, target: targetColor, guess: guessColor, score: s }]);
                 setStage('result');
             };
 
@@ -254,44 +244,32 @@
 
             if (stage === 'start') return (
                 <div className="h-screen flex flex-col items-center justify-center p-8 text-center bg-[#050505]">
-                    <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">OPTIC<span className="text-zinc-800">AI</span></h1>
-
+                    <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">Optic<span className="text-zinc-500">AI</span></h1>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mb-12">
                         <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
                             <div className="text-3xl">👁️</div>
-                            <h3 className="font-black text-[10px] tracking-[0.3em] uppercase text-zinc-500">Stare</h3>
+                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-zinc-1000">Stare</h3>
                             <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">5 seconds. Burn the color into your retinas. Don't blink!</p>
                         </div>
                         <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3 scale-105 bg-white/[0.07] border-white/10 shadow-xl">
                             <div className="text-3xl">🎨</div>
-                            <h3 className="font-black text-[10px] tracking-[0.3em] uppercase text-zinc-500">Match</h3>
+                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-text-zinc-1000">Match</h3>
                             <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">30 seconds to recreate that magic. It's your time to shine.</p>
                         </div>
                         <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
                             <div className="text-3xl">⚖️</div>
-                            <h3 className="font-black text-[10px] tracking-[0.3em] uppercase text-zinc-500">Survive</h3>
+                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-zinc-1000">Score</h3>
                             <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">We score with Elite precision. Aim for a "9" or higher.</p>
                         </div>
                     </div>
-
-                    {/* NEOMORPHIC START BUTTON */}
-                    <button
-                        onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }}
-                        className="neu-btn-white text-black px-12 py-6 rounded-full font-black tracking-[0.1em] text-[20px] flex items-center justify-center gap-6 group mb-6 transition-all active:scale-95"
-                    >
+                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }} className="neu-btn-white text-black px-12 py-6 rounded-full font-black tracking-[0.05em] text-[20px] flex items-center justify-center gap-6 group mb-6 transition-all active:scale-95">
                         <span>Start OpticAI</span>
                         <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                            <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" />
-                            </svg>
+                            <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
                         </div>
                     </button>
-
-                    <p className="text-shadow-xl font-bold tracking-[0.05em] text-white/60 mb-16">
-                        5 Rounds. 1 Crown. Are your eyes lying to you?
-                    </p>
-
-                    <div className="fixed bottom-10 text-[16px] font-bold tracking-[0.05em] text-zinc-700 ">Made by Ayan Jyoti Dutta :)</div>
+                    <p className="text-shadow-xl font-bold tracking-[0.05em] text-white/60 mb-16">5 Rounds. 1 Crown. Are your eyes lying to you?</p>
+                    <div className="fixed bottom-10 text-[16px] font-bold tracking-[0.05em] text-zinc-500">Made by Ayan Jyoti Dutta :)</div>
                 </div>
             );
 
@@ -319,12 +297,21 @@
 
             if (stage === 'result') return (
                 <div className="h-screen flex flex-col bg-black relative">
-                    <div className="flex-1 w-full" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }} />
-                    <div className="flex-1 w-full" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }} />
+                    <div className="flex-1 w-full relative" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Original Colour</span>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full relative" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">Your Colour</span>
+                        </div>
+                    </div>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6 z-20">
                         <div className="bg-white text-black px-12 py-6 rounded-[32px] shadow-3xl border-[10px] border-black text-center"><div className="text-[10px] font-black uppercase tracking-[0.4em] opacity-30 mb-1">Score</div><div className="text-6xl font-black mono">{history[history.length - 1].score}</div></div>
                         <button onClick={next} className="bg-white/10 hover:bg-white/20 backdrop-blur-2xl text-white px-10 py-3 rounded-full font-black tracking-widest border border-white/20 uppercase text-[10px] transition">Next Round</button>
                     </div>
+                    <div className="absolute inset-x-0 h-px bg-white/20 top-1/2 z-10" />
                 </div>
             );
 
@@ -349,28 +336,26 @@
                             {history.map(h => (
                                 <div key={h.round} className="stage-card bg-[#111] border border-zinc-800 rounded-[32px] p-6 flex flex-col gap-5 border">
                                     <div className="flex justify-between items-center px-1"><span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Stage 0{h.round}</span><span className="mono font-bold text-white/90 text-sm">{h.score}</span></div>
-                                    <div className="h-32 rounded-2xl overflow-hidden border border-zinc-900 shadow-2xl relative"><div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.target[0]}, ${h.target[1]}%, ${h.target[2]}%)` }} /><div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.guess[0]}, ${h.guess[1]}%, ${h.guess[2]}%)` }} /><div className="absolute inset-x-0 h-px bg-white/10 top-1/2" /></div>
+                                    <div className="h-32 rounded-2xl overflow-hidden border border-zinc-900 shadow-2xl relative">
+                                        <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.target[0]}, ${h.target[1]}%, ${h.target[2]}%)` }} />
+                                        <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.guess[0]}, ${h.guess[1]}%, ${h.guess[2]}%)` }} />
+                                        <div className="absolute inset-x-0 h-px bg-white/10 top-1/2" />
+                                    </div>
                                     <div className="text-[9px] font-black text-zinc-700 uppercase tracking-tighter truncate text-center">{h.theme}</div>
                                 </div>
                             ))}
                         </div>
 
                         <div className="flex flex-col items-center gap-6 mb-20 w-full max-w-md">
-                            <button
-                                onClick={() => copyShareData(tier, totalDisplay)}
-                                className="neu-btn w-full text-white py-6 rounded-full font-black tracking-[0.2em] text-lg flex items-center justify-center gap-6 group px-10"
-                            >
+                            <button onClick={() => copyShareData(tier, totalDisplay)} className="neu-btn w-full text-white py-6 rounded-full font-black tracking-[0.2em] text-lg flex items-center justify-center gap-6 group px-10">
                                 <span className="text-white/90">Share OpticAI</span>
                                 <div className="bg-white/10 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
                                     <svg className="w-5 h-5 text-white/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
                                 </div>
                             </button>
-
-                            <button onClick={() => window.location.reload()} className="neu-btn w-full text-zinc-400 hover:text-white py-5 rounded-full font-black tracking-[0.15em] text-xs transition uppercase">
-                                {retryText}
-                            </button>
+                            <button onClick={() => window.location.reload()} className="neu-btn w-full text-zinc-400 hover:text-white py-5 rounded-full font-black tracking-[0.15em] text-xs transition uppercase">{retryText}</button>
                         </div>
-                        <div className="text-[16px] font-medium tracking-[0.05em] text-zinc-700 mb-10">Made by Ayan Jyoti Dutta :)</div>
+                        <div className="text-[11px] font-medium tracking-[0.2em] text-zinc-700 uppercase mb-10">Made by Ayan Jyoti Dutta :)</div>
                     </div>
                 );
             }
