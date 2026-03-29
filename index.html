@@ -3,8 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>OpticAI | Pro Edition</title>
+
+    <meta name="description"
+        content="The Elite Benchmark for Human Color Vision. Test your retinas against OpticAI's precision engine.">
+    <meta property="og:title" content="OpticAI | Human Vision Benchmark">
+    <meta property="og:description" content="Can you beat the 25 Score Elite Floor? Test your color intuition now.">
+    <meta property="og:image" content="logo.png">
+    <meta property="og:type" content="website">
+
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -18,6 +26,8 @@
             color: white;
             -webkit-font-smoothing: antialiased;
             overflow: hidden;
+            /* MOBILE FIX: Prevent page bounce and zoom */
+            touch-action: none;
         }
 
         .mono {
@@ -42,7 +52,7 @@
             animation: heartbeat 1s ease-in-out infinite;
         }
 
-        /* UPDATED: High-Intensity Universal Glow Animation */
+        /* HIGH-INTENSITY GLOW ANIMATION - RESTORED FULL */
         @keyframes glow-pulse {
             0% {
                 box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
@@ -50,8 +60,8 @@
             }
 
             50% {
-                box-shadow: 0 0 30px rgba(255, 255, 255, 1);
-                border-color: rgba(-3, -3, -3, 0.5);
+                box-shadow: 0 0 35px rgba(255, 255, 255, 0.6);
+                border-color: rgba(255, 255, 255, 0.5);
             }
 
             100% {
@@ -64,6 +74,7 @@
             animation: glow-pulse 2s infinite ease-in-out;
         }
 
+        /* MOBILE FIX: Slider behavior control */
         input[type=range] {
             -webkit-appearance: none;
             background: rgba(255, 255, 255, 0.1);
@@ -71,6 +82,7 @@
             border-radius: 4px;
             outline: none;
             width: 100%;
+            touch-action: pan-x;
         }
 
         input[type=range]::-webkit-slider-thumb {
@@ -96,13 +108,6 @@
 
         .stage-card {
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .stage-card:hover {
-            transform: scale(1.08) translateY(-10px);
-            z-index: 50;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            border-color: rgba(255, 255, 255, 0.3);
         }
 
         .neu-btn {
@@ -149,6 +154,10 @@
 
         .toast {
             animation: slideUp 0.3s ease-out forwards;
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .timer-svg {
@@ -271,6 +280,7 @@
             };
 
             const next = () => {
+                setResultTimer(-2);
                 if (round < 5) {
                     setRound(round + 1); setTargetColor(generateColor(round + 1));
                     setGuessColor([180, 100, 50]); setMsTimer(5000); setStage('memorize');
@@ -283,21 +293,18 @@
             };
 
             const copyGameLink = () => {
-                navigator.clipboard.writeText(window.location.href).then(() => {
-                    triggerToast("Game Link Copied!");
-                });
+                navigator.clipboard.writeText(window.location.href).then(() => { triggerToast("Game Link Copied!"); });
             };
 
             const copyScoreCard = (tier, display) => {
                 const text = `OpticAI Result: I scored ${display}! My vision is officially "${tier.label}". Can you beat my score? \n\nPlay here: ${window.location.href}`;
-                navigator.clipboard.writeText(text).then(() => {
-                    triggerToast("Score Card Copied!");
-                });
+                navigator.clipboard.writeText(text).then(() => { triggerToast("Score Card Copied!"); });
             };
 
             if (stage === 'start') return (
                 <div className="h-screen flex flex-col items-center justify-center p-8 text-center bg-[#050505]">
                     <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">Optic<span className="text-zinc-500">AI</span></h1>
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mb-12">
                         <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
                             <div className="text-3xl">👁️</div>
@@ -315,13 +322,20 @@
                             <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">Aim for a "7" or higher score each round.</p>
                         </div>
                     </div>
-                    {/* START BUTTON: Added animate-glow class */}
+
                     <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }} className="neu-btn-white animate-glow text-black px-6 h-16 rounded-full font-black tracking-[0.05em] text-[24px] flex items-center justify-center gap-6 group mb-6 transition-all active:scale-95">
                         <span>Start OpticAI</span>
                         <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
                             <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
                         </div>
                     </button>
+
+                    <div className="bg-white/[0.03] border border-white/5 px-8 py-3 rounded-2xl mb-12">
+                        <p className="text-[11px] font-bold text-white/40 uppercase tracking-widest">
+                            ⚡ Calibration Tip: Disable Night Shift & Brightness > 80% for accuracy.
+                        </p>
+                    </div>
+
                     <p className="text-shadow-xl font-bold tracking-[0.05em] text-white/60 mb-16">5 Colours! <br />5 Roundsss!!! <br />Are your eyes lying to you?!?</p>
                     <div className="fixed bottom-10 text-[16px] font-bold tracking-[0.05em] text-zinc-500">Made by Ayan Jyoti Dutta 😇</div>
                 </div>
@@ -366,7 +380,6 @@
                             <div className="text-[24px] font-black tracking-[0.1em] opacity-30 mb-1">Score</div>
                             <div className="text-6xl font-black mono">{history[history.length - 1].score}</div>
                         </div>
-                        {/* UPDATE 1: Next Round button text logic */}
                         <button onClick={next} className="neu-btn px-10 py-3 rounded-full font-black border border-white/10 text-white text-[20px] flex items-center gap-4 group">
                             {round === 5 ? "Game Over!" : "Next Round"}
                             <div className="relative w-8 h-8 flex items-center justify-center">
@@ -375,7 +388,7 @@
                                     <circle className="timer-circle stroke-white fill-none" strokeWidth="3" cx="18" cy="18" r="16"
                                         style={{ strokeDashoffset: (resultTimer / 5) * 100 }} />
                                 </svg>
-                                <span className="absolute text-[10px] mono">{resultTimer}</span>
+                                <span className="absolute text-[10px] mono">{resultTimer > 0 ? resultTimer : 0}</span>
                             </div>
                         </button>
                     </div>
@@ -389,7 +402,6 @@
                 const decimalPart = rawTotal % 1;
                 const calculatedTarget = decimalPart < 0.5 ? Math.ceil(rawTotal) : Math.floor(rawTotal) + 2;
 
-                {/* UPDATE 2: Try Beating Logic Floor at 25 */ }
                 const targetScore = Math.max(25, calculatedTarget);
                 const retryText = `Try Beating ${targetScore} Score`;
 
@@ -397,7 +409,7 @@
 
                 return (
                     <div className="h-screen w-full bg-[#080808] p-10 flex flex-col items-center overflow-y-auto relative">
-                        {toast && <div className="fixed bottom-32 left-1/2 toast z-[100] bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl">{toast}</div>}
+                        {toast && <div className="bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl toast">{toast}</div>}
                         <div className="flex-grow flex flex-col items-center justify-center text-center mt-12 mb-16">
                             <h2 className="text-blue-400 font-black tracking-[0.4em] text-[24px] uppercase mb-4 italic">{tier.label}</h2>
                             <div className="text-[160px] font-black leading-none tracking-tighter mono mb-6 select-none">{totalDisplay}</div>
@@ -426,15 +438,12 @@
                                     </svg>
                                 </button>
 
-                                <button onClick={() => copyScoreCard(tier, totalDisplay)} className="neu-btn-white flex-1 text-black h-16 rounded-full font-black text-lg flex items-center justify-center gap-4 group active:scale-95">
-                                    <span>Share OpticAI</span>
-                                    <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                                        <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
-                                    </div>
+                                <button onClick={() => copyScoreCard(tier, totalDisplay)} className="neu-btn-white flex-1 h-16 text-black rounded-full font-black text-lg flex items-center justify-center gap-4 group active:scale-95">
+                                    <span>Share Result</span>
                                 </button>
                             </div>
 
-                            <button onClick={() => window.location.reload()} className="neu-btn animate-glow w-full text-zinc-400 hover:text-white py-5 rounded-full font-black text-lg transition active:scale-95">
+                            <button onClick={() => window.location.reload()} className="neu-btn animate-glow w-full text-zinc-400 hover:text-white h-16 rounded-full font-black text-lg transition active:scale-95">
                                 {retryText}
                             </button>
                         </div>
