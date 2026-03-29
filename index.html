@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChromaGuess Elite | Pro Edition</title>
+    <title>OpticAI | Pro Edition</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -138,7 +138,7 @@
 
             if (stage === 'start') return (
                 <div className="h-screen flex flex-col items-center justify-center p-8 text-center bg-[#050505]">
-                    <h1 className="text-8xl font-black italic mb-10 tracking-tighter">CHROMA<span className="text-zinc-800">ELITE</span></h1>
+                    <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">OPTIC<span className="text-zinc-800">AI</span></h1>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mb-12">
                         <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
@@ -160,12 +160,11 @@
 
                     <button onClick={() => {setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000);}} className="bg-white text-black px-16 py-4 rounded-full font-black tracking-widest hover:scale-105 transition mb-6 shadow-2xl active:scale-95">START GAME</button>
                     
-                    {/* ENHANCED TAGLINE */}
                     <p className="text-sm font-bold tracking-[0.25em] text-white/60 uppercase mb-16 select-none">
                         5 Rounds. 1 Crown. Are your eyes lying to you?
                     </p>
 
-                    <div className="fixed bottom-10 text-[11px] font-medium tracking-[0.2em] text-zinc-700 uppercase">Made by Ayan Jyoti Dutta :)</div>
+                    <div className="fixed bottom-10 text-[14px] font-bold tracking-[0.2em] text-zinc-700 uppercase">Made by Ayan Jyoti Dutta :)</div>
                 </div>
             );
 
@@ -183,7 +182,7 @@
                         <span className="mono font-bold text-3xl tracking-widest">{guessTimer}S</span>
                     </div>
 
-                    <div className="absolute top-24 right-8 bottom-8 w-80 glass rounded-[40px] p-8 flex flex-col gap-10 z-10 shadow-2xl">
+                    <div className="absolute top-24 right-8 bottom-8 w-80 glass rounded-[40px] p-8 flex flex-col gap-10 z-10 shadow-2xl text-white">
                         <div className="space-y-4">
                             <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Hue Selection • {guessColor[0]}°</label>
                             <input type="range" min="0" max="360" value={guessColor[0]} onChange={e => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="hue-slider" />
