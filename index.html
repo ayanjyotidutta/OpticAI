@@ -145,13 +145,28 @@
         const getTieredInfo = (score) => {
             const s = Math.floor(score);
             if (s >= 49) return { label: "DIVINE VISIONARY", quote: "Are you a monitor? Your retinas are cheating." };
-            if (s >= 47) return { label: "COLOR CONNOISSEUR", quote: "Pantone wants your location right now." };
-            if (s >= 44) return { label: "EYE OF THE TIGER", quote: "You see the spectrum others only dream of." };
+            if (s >= 48) return { label: "EYE OF THE TIGER", quote: "Pantone wants your location right now." };
+            if (s >= 47) return { label: "COLOR CONNOISSEUR", quote: "You see the spectrum others only dream of." };
+            if (s >= 46) return { label: "CHROMA MASTER", quote: "Absolute precision. Flawless execution." };
+            if (s >= 45) return { label: "SPECTRUM ELITE", quote: "Your color intuition is scarily accurate." };
+            if (s >= 44) return { label: "VISUAL ARCHITECT", quote: "A masterful display of light and hue." };
+            if (s >= 43) return { label: "OPTIC ACE", quote: "You've got the professional touch." };
+            if (s >= 42) return { label: "PIXEL PERFECT", quote: "Subtle nuances are your playground." };
+            if (s >= 41) return { label: "COLOR MAVEN", quote: "Remarkably close. You have the gift." };
             if (s >= 40) return { label: "SHADE SPECIALIST", quote: "Strong grasp of the secondary layers." };
-            if (s >= 35) return { label: "VIBE CHECKER", quote: "You've got the vibe, just missing the nuances." };
-            return { label: "COLOR APPRENTICE", quote: "The spectrum is wide, and you're just visiting." };
+            if (s >= 38) return { label: "VIBE CHECKER", quote: "You've got the vibe, just missing the nuances." };
+            if (s >= 35) return { label: "STEADY EYE", quote: "Solid work. The training is paying off." };
+            if (s >= 31) return { label: "COLOUR CURIOUS", quote: "Getting warmer. Focus on the saturation." };
+            
+            const lowQuotes = [
+                "Is your 'Night Shift' mode on? Be honest.",
+                "You can do better. Squint a little harder next time.",
+                "Good effort, but your retinas need a recalibration.",
+                "The spectrum is wide, and you're just visiting.",
+                "Not quite there yet. Try it in a darker room?"
+            ];
+            return { label: "COLOR APPRENTICE", quote: lowQuotes[s % 5] };
         };
-
         const hslToRgb = (h, s, l) => {
             s /= 100; l /= 100;
             const k = n => (n + h / 30) % 12;
