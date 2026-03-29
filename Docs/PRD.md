@@ -1,19 +1,20 @@
-OpticAI: Product Requirements Document
-Version: 1.0 (Elite Build)
+# Product Requirements Document: OpticAI
+**Version:** 1.4 (Final Elite Build)
 
-Author: Ayan Jyoti Dutta
+## 1. Problem Statement
+Visual professionals lack a quantitative tool to benchmark their color perception. Existing tools are either too technical or lack the "stakes" required to drive engagement.
 
-1. Problem Statement
-Visual professionals (Brand Managers, Designers) often rely on "gut feeling" for color accuracy.
-There is no lightweight, engaging tool to benchmark this perception quantitatively.
+## 2. User Experience Goals
+* **High-Stakes Retention:** Use a 5-second "Stare" phase to test short-term sensory memory.
+* **Tactile Feedback:** Use Neomorphic design to make digital buttons feel like premium hardware.
+* **Social Status:** Allow users to "Flex" their visual IQ through a consolidated sharing loop.
 
-2. Core User Loop
-        Memorize: User views a target color for 5s (Millisecond countdown).
-        Recreate: User adjusts HSL sliders (30s timer) to match the memory.
-        Analyze: Instant feedback on accuracy with target-vs-guess comparison.
-        Repeat: 5 rounds of increasing difficulty (Pastels, Earth tones, Boss Luminance).
+## 3. Core Features
+* **The Scoring Engine:** A non-linear algorithm that punishes slight deviations, ensuring a "9.0+" score feels earned.
+* **Visual Calibration:** Post-round comparison cards showing the 'Target' vs 'Guess' for immediate user learning.
+* **The Adaptive CTA:** A dynamic "Try Beating X Score" button that calculates a personalized goal (+1 to current score).
 
-3. Critical Success Metrics (KPIs)
-        Average Accuracy: Targeting a mean score of 35-42 for the average user.
-        Session Completion Rate: % of users finishing all 5 rounds.
-        Replay Rate: Driven by the "Beat Your Score" dynamic CTA.
+## 4. Success Metrics (KPIs)
+* **K-Factor:** Social sharing frequency per unique session.
+* **Session Depth:** Percentage of users completing all 5 rounds.
+* **Accuracy Mean:** Benchmarking the "Elite" threshold (Targeting Top 5% of users).
