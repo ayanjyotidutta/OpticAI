@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>OpticAI | Pro Edition</title>
 
     <meta name="description"
@@ -24,9 +25,9 @@
             background-color: #000;
             color: white;
             -webkit-font-smoothing: antialiased;
-            overflow: hidden;
-            /* MOBILE FIX: Prevent page bounce and zoom */
-            touch-action: none;
+            /* MOBILE FIX: Allow scrolling only on final result screen if content overflows */
+            overflow-x: hidden;
+            touch-action: manipulation;
         }
 
         .mono {
@@ -51,7 +52,6 @@
             animation: heartbeat 1s ease-in-out infinite;
         }
 
-        /* HIGH-INTENSITY GLOW ANIMATION - RESTORED FULL */
         @keyframes glow-pulse {
             0% {
                 box-shadow: 6px 6px 14px #020202, -3px -3px 10px #1a1b1f;
@@ -73,7 +73,6 @@
             animation: glow-pulse 2s infinite ease-in-out;
         }
 
-        /* MOBILE FIX: Slider behavior control */
         input[type=range] {
             -webkit-appearance: none;
             background: rgba(255, 255, 255, 0.1);
@@ -86,8 +85,8 @@
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
+            height: 28px;
+            width: 28px;
             border-radius: 50%;
             background: white;
             cursor: pointer;
@@ -111,7 +110,7 @@
 
         .neu-btn {
             background: linear-gradient(0deg, #0d0d0f, #080809);
-            box-shadow: 6px 6px 2px #020202, 3px 3px 2px #1a1b1f;
+            box-shadow: 6px 6px 12px #020202, 3px 3px 8px #1a1b1f;
             border: 1px solid rgba(255, 255, 255, 0.03);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -157,6 +156,7 @@
             bottom: 32px;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 100;
         }
 
         .timer-svg {
@@ -301,66 +301,77 @@
             };
 
             if (stage === 'start') return (
-                <div className="h-screen flex flex-col items-center justify-center p-8 text-center bg-[#050505]">
-                    <h1 className="text-8xl font-black italic mb-10 tracking-tighter select-none">Optic<span className="text-zinc-500">AI</span></h1>
+                <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#050505] overflow-y-auto">
+                    <h1 className="text-6xl md:text-8xl font-black italic mb-10 tracking-tighter select-none">Optic<span className="text-zinc-500">AI</span></h1>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mb-12">
-                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
-                            <div className="text-3xl">👁️</div>
-                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-zinc-1000">Stare</h3>
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">5 seconds. Burn the color into your retinas -- Don't blink!</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full max-w-5xl mb-12">
+                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-2">
+                            <div className="text-2xl md:text-3xl">👁️</div>
+                            <h3 className="font-black text-[12px] md:text-[14px] tracking-[0.1em] uppercase text-zinc-100">Stare</h3>
+                            <p className="text-[11px] text-zinc-400 leading-relaxed font-medium italic">5 seconds. Burn the color into your retinas.</p>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
-                            <div className="text-3xl">🎨</div>
-                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-text-zinc-1000">Match</h3>
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">30 seconds to guess the colour. It's your time to shine!</p>
+                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-2">
+                            <div className="text-2xl md:text-3xl">🎨</div>
+                            <h3 className="font-black text-[12px] md:text-[14px] tracking-[0.1em] uppercase text-zinc-100">Match</h3>
+                            <p className="text-[11px] text-zinc-400 leading-relaxed font-medium italic">30 seconds to guess. Accuracy is everything.</p>
                         </div>
-                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-3">
-                            <div className="text-3xl">⚖️</div>
-                            <h3 className="font-black text-[14px] tracking-[0.1em] uppercase text-zinc-1000">Score</h3>
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium italic">Aim for a "7" or higher score each round.</p>
+                        <div className="bg-white/5 p-6 rounded-[32px] border border-white/5 space-y-2">
+                            <div className="text-2xl md:text-3xl">⚖️</div>
+                            <h3 className="font-black text-[12px] md:text-[14px] tracking-[0.1em] uppercase text-zinc-100">Score</h3>
+                            <p className="text-[11px] text-zinc-400 leading-relaxed font-medium italic">Aim for a "7" or higher score each round.</p>
                         </div>
                     </div>
 
-                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }} className="neu-btn-white animate-glow text-black px-6 h-16 rounded-full font-black tracking-[0.05em] text-[24px] flex items-center justify-center gap-6 group mb-6 transition-all active:scale-95">
+                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); setMsTimer(5000); }} className="neu-btn-white animate-glow text-black px-8 h-16 rounded-full font-black tracking-[0.05em] text-[20px] md:text-[24px] flex items-center justify-center gap-4 group mb-6 transition-all active:scale-95">
                         <span>Start OpticAI</span>
-                        <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                        <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center">
                             <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
                         </div>
                     </button>
 
-                    <div className="bg-white/[0.03] border border-white/5 px-8 py-3 rounded-2xl mb-12">
-                        <p className="text-[11px] font-bold text-white/40 tracking-widest">
-                            ⚡ Calibration Tip: Disable Night Shift & Brightness > 80% for accuracy. <br/>
-                            Works in Desktop Mode Only
+                    <div className="bg-white/[0.03] border border-white/5 px-6 py-3 rounded-2xl mb-8">
+                        <p className="text-[10px] font-bold text-white/40 tracking-widest leading-relaxed">
+                            ⚡ Calibration Tip: Disable Night Shift & Brightness > 80% <br />
+                            Optimized for Desktop & Mobile
                         </p>
                     </div>
 
-                    <p className="text-shadow-xl font-bold tracking-[0.05em] text-white/60 mb-16">5 Colours! <br />5 Roundsss!!! <br />Are your eyes lying to you?!?</p>
-                    <div className="fixed bottom-10 text-[16px] font-bold tracking-[0.05em] text-zinc-500">Made by Ayan Jyoti Dutta 😇</div>
+                    <p className="font-bold tracking-[0.05em] text-white/60 mb-12 text-sm md:text-base">5 Colours! 5 Rounds! <br />Are your eyes lying to you?</p>
+                    <div className="mt-auto md:fixed md:bottom-10 text-[14px] font-bold tracking-[0.05em] text-zinc-700">Made by Ayan Jyoti Dutta 😇</div>
                 </div>
             );
 
             if (stage === 'memorize') return (
-                <div className="h-screen w-full flex items-center justify-center pulse-container" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
-                    <h2 className="text-white font-black tracking-[0.3em] uppercase mb-8 text-2xl drop-shadow-2xl">Memorise the colour</h2>
-                    <div className="bg-black/40 backdrop-blur-2xl rounded-[40px] px-16 py-10 border border-white/10 shadow-2xl text-center">
-                        <div className="text-[120px] font-black mono text-white leading-none tracking-tighter">{formatMs(msTimer)}</div>
+                <div className="h-screen w-full flex flex-col items-center justify-center pulse-container p-6 text-center" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
+                    <h2 className="text-white font-black tracking-[0.2em] md:tracking-[0.3em] uppercase mb-8 text-xl md:text-2xl drop-shadow-2xl">Memorise the colour</h2>
+                    <div className="bg-black/40 backdrop-blur-2xl rounded-[32px] md:rounded-[40px] px-10 md:px-16 py-8 md:py-10 border border-white/10 shadow-2xl">
+                        <div className="text-[80px] md:text-[120px] font-black mono text-white leading-none tracking-tighter">{formatMs(msTimer)}</div>
                     </div>
                 </div>
             );
 
             if (stage === 'guess') return (
-                <div className="h-screen w-full relative flex items-center justify-center" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
-                    <h2 className="absolute top-24 text-white font-black tracking-[0.3em] uppercase text-2xl drop-shadow-2xl">Guess the colour</h2>
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-xl px-10 py-3 rounded-full border border-white/10">
-                        <span className="mono font-bold text-3xl tracking-widest">{guessTimer} Sec</span>
+                <div className="h-screen w-full relative flex flex-col items-center justify-end md:justify-center p-6" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
+                    <h2 className="absolute top-20 md:top-24 text-white font-black tracking-[0.2em] md:tracking-[0.3em] uppercase text-lg md:text-2xl drop-shadow-2xl text-center w-full px-4">Guess the colour</h2>
+
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-xl px-8 md:px-10 py-2 md:py-3 rounded-full border border-white/10">
+                        <span className="mono font-bold text-xl md:text-3xl tracking-widest text-white">{guessTimer} Sec</span>
                     </div>
-                    <div className="absolute top-24 right-8 bottom-8 w-80 glass rounded-[40px] p-8 flex flex-col gap-10 z-10 shadow-2xl text-white">
-                        <div className="space-y-4"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Hue Selection • {guessColor[0]}°</label><input type="range" min="0" max="360" value={guessColor[0]} onChange={e => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="hue-slider" /></div>
-                        <div className="space-y-4"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Saturation • {guessColor[1]}%</label><input type="range" min="0" max="100" value={guessColor[1]} onChange={e => setGuessColor([guessColor[0], parseInt(e.target.value), guessColor[2]])} /></div>
-                        <div className="space-y-4"><label className="text-[10px] font-black uppercase tracking-widest text-white/40">Brightness • {guessColor[2]}%</label><input type="range" min="0" max="100" value={guessColor[2]} onChange={e => setGuessColor([guessColor[0], guessColor[1], parseInt(e.target.value)])} /></div>
-                        <button onClick={submitGuess} className="neu-btn mt-auto text-white py-5 rounded-2xl font-black tracking-widest uppercase text-xl active:scale-95 transition">Lock it In</button>
+
+                    <div className="w-full max-w-md md:absolute md:top-24 md:right-8 md:bottom-8 md:w-80 glass rounded-[32px] md:rounded-[40px] p-6 md:p-8 flex flex-col gap-6 md:gap-10 z-10 shadow-2xl text-white mb-4 md:mb-0">
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Hue • {guessColor[0]}°</label>
+                            <input type="range" min="0" max="360" value={guessColor[0]} onChange={e => setGuessColor([parseInt(e.target.value), guessColor[1], guessColor[2]])} className="hue-slider" />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Saturation • {guessColor[1]}%</label>
+                            <input type="range" min="0" max="100" value={guessColor[1]} onChange={e => setGuessColor([guessColor[0], parseInt(e.target.value), guessColor[2]])} />
+                        </div>
+                        <div className="space-y-3">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-white/40">Brightness • {guessColor[2]}%</label>
+                            <input type="range" min="0" max="100" value={guessColor[2]} onChange={e => setGuessColor([guessColor[0], guessColor[1], parseInt(e.target.value)])} />
+                        </div>
+                        <button onClick={submitGuess} className="neu-btn mt-4 md:mt-auto text-white py-4 md:py-5 rounded-2xl font-black tracking-widest uppercase text-lg md:text-xl active:scale-95 transition">Lock it In</button>
                     </div>
                 </div>
             );
@@ -368,22 +379,22 @@
             if (stage === 'result') return (
                 <div className="h-screen flex flex-col bg-black relative">
                     <div className="flex-1 w-full relative" style={{ backgroundColor: `hsl(${targetColor[0]}, ${targetColor[1]}%, ${targetColor[2]}%)` }}>
-                        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
-                            <span className="text-[20px] font-black text-white/80">Original Colour</span>
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 whitespace-nowrap">
+                            <span className="text-[14px] md:text-[20px] font-black text-white/80 uppercase tracking-widest">Original Colour</span>
                         </div>
                     </div>
                     <div className="flex-1 w-full relative" style={{ backgroundColor: `hsl(${guessColor[0]}, ${guessColor[1]}%, ${guessColor[2]}%)` }}>
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10">
-                            <span className="text-[20px] font-black text-white/80">Your Colour</span>
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/30 backdrop-blur-md px-6 py-2 rounded-full border border-white/10 whitespace-nowrap">
+                            <span className="text-[14px] md:text-[20px] font-black text-white/80 uppercase tracking-widest">Your Colour</span>
                         </div>
                     </div>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-6 z-20">
-                        <div className="bg-white text-black px-12 py-6 rounded-[32px] shadow-xl border-[5px] border-black/30 text-center">
-                            <div className="text-[24px] font-black tracking-[0.1em] opacity-30 mb-1">Score</div>
-                            <div className="text-6xl font-black mono">{history[history.length - 1].score}</div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 md:gap-6 z-20 w-full px-6">
+                        <div className="bg-white text-black px-8 md:px-12 py-4 md:py-6 rounded-[24px] md:rounded-[32px] shadow-xl border-[4px] md:border-[5px] border-black/30 text-center">
+                            <div className="text-[16px] md:text-[24px] font-black tracking-[0.1em] opacity-30 mb-1">Score</div>
+                            <div className="text-4xl md:text-6xl font-black mono">{history[history.length - 1].score}</div>
                         </div>
-                        <button onClick={next} className="neu-btn px-10 py-3 rounded-full font-black border border-white/10 text-white text-[20px] flex items-center gap-4 group">
-                            {round === 5 ? "Game Over!" : "Next Round"}
+                        <button onClick={next} className="neu-btn px-8 md:px-10 py-3 rounded-full font-black border border-white/10 text-white text-[16px] md:text-[20px] flex items-center gap-4 active:scale-95 transition-all">
+                            {round === 5 ? "View Results" : "Next Round"}
                             <div className="relative w-8 h-8 flex items-center justify-center">
                                 <svg className="timer-svg w-full h-full" viewBox="0 0 36 36">
                                     <circle className="stroke-white/10 fill-none" strokeWidth="3" cx="18" cy="18" r="16" />
@@ -406,26 +417,29 @@
 
                 const targetScore = Math.max(25, calculatedTarget);
                 const retryText = `Try Beating ${targetScore} Score`;
-
                 const tier = getTieredInfo(rawTotal);
 
                 return (
-                    <div className="h-screen w-full bg-[#080808] p-10 flex flex-col items-center overflow-y-auto relative">
+                    <div className="min-h-screen w-full bg-[#080808] p-6 md:p-10 flex flex-col items-center overflow-y-auto">
                         {toast && <div className="bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl toast">{toast}</div>}
-                        <div className="flex-grow flex flex-col items-center justify-center text-center mt-12 mb-16">
-                            <h2 className="text-blue-400 font-black tracking-[0.4em] text-[24px] uppercase mb-4 italic">{tier.label}</h2>
-                            <div className="flex items-baseline justify-center mb-6 select-none">
-                                <div className="text-[120px] font-black leading-none tracking-tighter mono">{totalDisplay}</div>
-                                <div className="text-[40px] font-black mono text-zinc-700 ml-2 tracking-tighter">/50</div>
+
+                        <div className="flex flex-col items-center justify-center text-center mt-8 md:mt-12 mb-10 md:mb-16">
+                            <h2 className="text-blue-400 font-black tracking-[0.3em] md:tracking-[0.4em] text-[18px] md:text-[24px] uppercase mb-4 italic">{tier.label}</h2>
+                            <div className="flex items-baseline justify-center mb-4 select-none">
+                                <div className="text-[80px] md:text-[120px] font-black leading-none tracking-tighter mono">{totalDisplay}</div>
+                                <div className="text-[30px] md:text-[40px] font-black mono text-zinc-700 ml-2 tracking-tighter">/50</div>
                             </div>
-                            <p className="text-zinc-500 font-medium italic text-lg opacity-80 mb-4 select-none">"{tier.quote}"</p>
+                            <p className="text-zinc-500 font-medium italic text-sm md:text-lg opacity-80 px-4">"{tier.quote}"</p>
                         </div>
 
-                        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-5 gap-6 mb-12 px-4">
+                        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-5 gap-4 md:gap-6 mb-12">
                             {history.map((h, i) => (
-                                <div key={i} className="stage-card bg-[#111] border border-zinc-800 rounded-[32px] p-6 flex flex-col gap-5 border">
-                                    <div className="flex justify-between items-center px-1"><span className="text-[10px] font-black text-zinc-600 uppercase">Stage 0{i + 1}</span><span className="mono font-bold text-white/90 text-sm">{h.score}</span></div>
-                                    <div className="h-32 rounded-2xl overflow-hidden border border-zinc-900 shadow-2xl relative">
+                                <div key={i} className="stage-card bg-[#111] border border-zinc-800 rounded-[24px] md:rounded-[32px] p-5 md:p-6 flex flex-col gap-4">
+                                    <div className="flex justify-between items-center px-1">
+                                        <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Stage 0{i + 1}</span>
+                                        <span className="mono font-bold text-white/90 text-sm">{h.score}</span>
+                                    </div>
+                                    <div className="h-24 md:h-32 rounded-xl md:rounded-2xl overflow-hidden border border-zinc-900 shadow-inner relative">
                                         <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.target[0]}, ${h.target[1]}%, ${h.target[2]}%)` }} />
                                         <div className="h-1/2 w-full" style={{ backgroundColor: `hsl(${h.guess[0]}, ${h.guess[1]}%, ${h.guess[2]}%)` }} />
                                         <div className="absolute inset-x-0 h-px bg-white/10 top-1/2" />
@@ -434,28 +448,26 @@
                             ))}
                         </div>
 
-                        <div className="flex flex-col items-center gap-6 mb-20 w-full max-w-md">
-                            <div className="flex flex-row items-center gap-4 w-full">
-                                <button onClick={copyGameLink} className="neu-btn-white w-16 h-16 rounded-full flex items-center justify-center group shrink-0 active:scale-90">
-                                    <svg className="w-6 h-6 text-black opacity-80 group-hover:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <div className="flex flex-col items-center gap-4 mb-16 w-full max-w-md">
+                            <div className="flex flex-row items-center gap-3 w-full">
+                                <button onClick={copyGameLink} className="neu-btn-white w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center shrink-0 active:scale-90">
+                                    <svg className="w-6 h-6 text-black opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                                         <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                                     </svg>
                                 </button>
-
-                                <button onClick={() => copyScoreCard(tier, totalDisplay)} className="neu-btn-white flex-1 h-16 text-black rounded-full font-black text-lg flex items-center justify-center gap-4 group active:scale-95">
+                                <button onClick={() => copyScoreCard(tier, totalDisplay)} className="neu-btn-white flex-1 h-14 md:h-16 text-black rounded-full font-black text-base md:text-lg flex items-center justify-center gap-3 active:scale-95">
                                     <span>Share Result</span>
-                                    <div className="bg-black/5 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                                        <svg className="w-5 h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
+                                    <div className="bg-black/5 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                                        <svg className="w-4 h-4 md:w-5 md:h-5 text-black/60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M11 13L15 9M15 9H9M15 9V15" /><circle cx="12" cy="12" r="10" /></svg>
                                     </div>
                                 </button>
                             </div>
-
-                            <button onClick={() => window.location.reload()} className="neu-btn animate-glow w-full text-zinc-400 hover:text-white h-16 rounded-full font-black text-lg transition active:scale-95">
+                            <button onClick={() => window.location.reload()} className="neu-btn animate-glow w-full text-zinc-400 hover:text-white h-14 md:h-16 rounded-full font-black text-base md:text-lg transition active:scale-95">
                                 {retryText}
                             </button>
                         </div>
-                        <div className="text-[16px] font-medium text-zinc-700 mb-10">Made by Ayan Jyoti Dutta 😇</div>
+                        <div className="text-[14px] font-medium text-zinc-700 pb-10">Made by Ayan Jyoti Dutta 😇</div>
                     </div>
                 );
             }
