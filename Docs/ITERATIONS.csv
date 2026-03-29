@@ -1,0 +1,5 @@
+Version,Focus,Key Changes,Feedback Source
+v0.1,Prototype,"Single slider, basic RGB matching.",Initial Concept
+v0.5,UX Polish,"Shifted to HSL sliders for ""Artistic Logic.""",User Testing
+v0.8,Stress Mech,"Added 30s timers & ""Heartbeat"" pulse.",PM Review
+v1.0,Branding,"Name changed to OpticAI; added ""Try Beating"" logic.",Final Polish
