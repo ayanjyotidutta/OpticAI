@@ -38,7 +38,7 @@
 <body>
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
 
         const THEMES = [
             "ELECTRIC NEON TOKYO",
@@ -126,12 +126,11 @@
 
             if (stage === 'start') return (
                 <div className="h-screen flex flex-col items-center justify-center text-center p-10 bg-[#050505]">
-                    <h1 className="text-8xl font-black italic tracking-tighter mb-4 select-none">CHROMA<span className="text-zinc-800">ELITE</span></h1>
-                    <div className="mb-12 space-y-1">
-                        <p className="text-white/80 font-bold text-sm tracking-[0.1em]">MBA, SJMSOM, IIT Bombay</p>
-                        <p className="text-zinc-600 font-bold text-xs tracking-[0.2em] uppercase">Brand Manager, HCLTech Edition</p>
+                    <h1 className="text-8xl font-black italic tracking-tighter mb-12 select-none">CHROMA<span className="text-zinc-800">ELITE</span></h1>
+                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); }} className="bg-white text-black px-16 py-4 rounded-full font-black tracking-widest hover:scale-105 transition active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)] mb-20">ENTER VOID</button>
+                    <div className="fixed bottom-10 inset-x-0 opacity-40 text-[11px] font-medium tracking-[0.2em] text-zinc-400">
+                        Made by Ayan Jyoti Dutta :)
                     </div>
-                    <button onClick={() => { setTargetColor(generateColor(1)); setStage('memorize'); }} className="bg-white text-black px-16 py-4 rounded-full font-black tracking-widest hover:scale-105 transition active:scale-95 shadow-[0_0_30px_rgba(255,255,255,0.2)]">ENTER VOID</button>
                 </div>
             );
 
