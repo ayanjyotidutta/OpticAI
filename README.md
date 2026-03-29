@@ -1,3 +1,9 @@
+## 📖 Quick Links
+- [🚀 Live Benchmark](https://opticalgame.vercel.app/)
+- [🎯 Strategic PRD](#2-product-requirements-prd)
+- [🧬 Technical Scoring Appendix](#5-technical-appendix-the-scoring-engine)
+- [🗺️ User Journey Map](#4-user-journey-map)
+
 # OpticAI 👁️
 **High-Fidelity Perceptual Benchmarking & Visual Memory Engine**
 
